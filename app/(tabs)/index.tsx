@@ -1,6 +1,17 @@
-import React, { useState, useRef } from "react";
-import { StyleSheet, Button, View, Alert, Text, FlatList, Linking, KeyboardAvoidingView, Platform, TextInput, ScrollView } from 'react-native';
+import React, { useState, useRef, useEffect } from "react";
+import { StyleSheet, Button, View, Alert, Text, FlatList, Linking, KeyboardAvoidingView, Platform, TextInput, ScrollView, Image } from 'react-native';
 import OpenAI from "openai";
+import * as ImagePicker from "expo-image-picker";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+
+interface HistoryItem {
+  id: string;
+  verifiedText: string;
+  verificationResponse: string;
+  timestamp: number;
+}
 
 const $OPENROUTER_API_KEY = "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";
 
@@ -16,15 +27,101 @@ interface Article {
   url: string;
 }
 
+// Define the structure of the Sightengine API response
+interface SightengineResponse {
+  status: string;
+  request: {
+    id: string;
+    timestamp: number;
+    operations: number;
+  };
+  type: {
+    ai_generated: number;
+  };
+}
+
 export default function HomeScreen() {
   const [text, setText] = useState<string>("");
   const [response, setResponse] = useState<string>("");
   const [articles, setArticles] = useState<Article[]>([]);
   const textInputRef = useRef<TextInput>(null);
+  const [image, setImage] = useState<string | null>(null);
+  const [aiDetectionResult, setAiDetectionResult] = useState<string>("");
+
+
+
+  useEffect(() => {
+    loadStoredText();
+  }, []);
+
+  const loadStoredText = async () => {
+    try {
+      const storedText = await AsyncStorage.getItem('@verification_text');
+      if (storedText !== null) {
+        setText(storedText);
+      }
+    } catch (error) {
+      console.error('Error loading stored text:', error);
+    }
+  };
+
+  const saveText = async (textToSave: string) => {
+    try {
+      await AsyncStorage.setItem('@verification_text', textToSave);
+    } catch (error) {
+      console.error('Error saving text:', error);
+    }
+  };
 
   const handleInputChange = (input: string) => {
     setText(input);
+    saveText(input);
   }
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+      detectAiImage(result.assets[0].uri);
+    }
+  };
+
+  const detectAiImage = async (imageUri: string) => {
+    const formData = new FormData();
+    formData.append('media', {
+      uri: imageUri,
+      type: 'image/jpeg',
+      name: 'image.jpg',
+    } as any);
+    formData.append('models', 'genai');
+    formData.append('api_user', '154303857');
+    formData.append('api_secret', 'VbN5SrRTPXUB8ccA37YhXE6XvgBJT9iq');
+
+    try {
+      const response = await axios.post<SightengineResponse>('https://api.sightengine.com/1.0/check.json', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      if (response.data.type.ai_generated > 0.5) {
+        setAiDetectionResult("AI generated");
+      } else {
+        setAiDetectionResult("Not AI generated");
+      }
+    } catch (error) {
+      console.error('Error detecting AI image:', error);
+      Alert.alert("Error", "Failed to detect AI in the image.");
+    }
+  };
+
+  
 
   const fetchNews = async (query: string) => {
     const params: any = {
@@ -48,6 +145,8 @@ export default function HomeScreen() {
     }
   }
 
+  
+
   const verifyText = async () => {
     try {
       const completion = await openai.chat.completions.create({
@@ -56,13 +155,39 @@ export default function HomeScreen() {
           { role: "user", content: text }
         ],
       });
-      setResponse(completion.choices[0].message.content || "No response");
+      const newResponse = completion.choices[0].message.content || "No response";
+      setResponse(newResponse);
       fetchNews(text);
+      
+      // Save the new search to history
+      const newHistoryItem: HistoryItem = {
+        id: Date.now().toString(),
+        verifiedText: text,
+        verificationResponse: newResponse,
+        timestamp: Date.now(),
+      };
+  
+      try {
+        const jsonValue = await AsyncStorage.getItem('@search_history');
+        let history: HistoryItem[] = jsonValue != null ? JSON.parse(jsonValue) : [];
+        history.unshift(newHistoryItem); // Add new item to the beginning of the array
+        
+        // Limit history to last 50 items
+        if (history.length > 50) {
+          history = history.slice(0, 50);
+        }
+        
+        await AsyncStorage.setItem('@search_history', JSON.stringify(history));
+      } catch (error) {
+        console.error('Error saving to history:', error);
+      }
     } catch (error) {
       console.error("Error:", error);
       Alert.alert("Error", "Failed to get a response from the AI.");
     }
-  }
+  };
+
+
 
   const renderArticle = ({ item }: { item: Article }) => (
     <View style={styles.articleContainer}>
@@ -94,6 +219,13 @@ export default function HomeScreen() {
             placeholderTextColor="#999"
           />
           <Button title='Verify' onPress={verifyText} />
+          <Button title="Pick An Image" onPress={pickImage} />
+          {image && (
+            <View>
+              <Image source={{uri: image}} style={styles.image} />
+              <Text style={styles.aiDetectionResult}>{aiDetectionResult}</Text>
+            </View>
+          )}
         </View>
         
         {response && (
@@ -115,7 +247,6 @@ export default function HomeScreen() {
     </KeyboardAvoidingView>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -172,5 +303,16 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#4a90e2',
     textDecorationLine: 'underline',
+  },
+  image: {
+    width: 200,
+    height: 200,
+    marginTop: 10,
+  },
+  aiDetectionResult: {
+    marginTop: 10,
+    fontSize: 16,
+    color: 'white',
+    fontWeight: 'bold',
   },
 });

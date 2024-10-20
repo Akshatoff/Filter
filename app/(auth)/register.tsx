@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Pressable, Alert, StyleSheet } from 'react-native';
 import { initializeApp } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { useRouter } from "expo-router";
-
+import { Image } from "expo-image";
 const firebaseConfig = {
   apiKey: "AIzaSyA2ujqbvfFLA0Gy88reFq0mZL_6EcKd-t0",
   authDomain: "filter-4fb70.firebaseapp.com",
@@ -14,7 +14,7 @@ const firebaseConfig = {
   measurementId: "G-KQJ0D4RDVF"
 };
 const app = initializeApp(firebaseConfig);
-
+const heroimg = require("@/assets/images/danger.png")
 
 export default function RegisterScreen() {
    const [email, setEmail] = useState<string>('');  // Explicitly define state types
@@ -34,7 +34,11 @@ export default function RegisterScreen() {
 
   return (
     <View style={styles.container}>
-      <Text>Register</Text>
+      <View style={styles.imgContainer}>
+        <Image source={heroimg} style={styles.image}></Image>
+      </View>
+      <Text style={styles.text}>The Only Verification You Need</Text>
+      <View style={styles.textcontainer}>
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -51,16 +55,51 @@ export default function RegisterScreen() {
         secureTextEntry
          placeholderTextColor="#fff"
       />
-      <Button title="Register" onPress={handleRegister} />
-      <Button
-        title="Already have an account? Login"
-        onPress={() => router.push('/(auth)/' as never)} // Navigate to login screen
-      />
+      <Pressable style={styles.button} onPress={handleRegister}>
+        <Text style={styles.buttonLabel}>Register</Text>
+      </Pressable>
+    </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', padding: 16 },
-  input: { height: 40, borderColor: '#ccc', borderWidth: 1, marginBottom: 12, paddingHorizontal: 8,color:"#fff" }
+  container: { flex: 1, padding: 16, backgroundColor:"#101010", },
+  input: { height: 40, borderColor: '#f75e4e', borderWidth: 1, marginBottom: 12, paddingHorizontal: 8, color:"#fff", },
+  input1: { height: 40, borderColor: '#f75e4e', borderWidth: 1, marginBottom: 12, paddingHorizontal: 8, color:"#fff",},
+  imgContainer: {
+    flex:1,
+  },
+  image: {
+    width: "100%",
+    height: "100%",
+    marginLeft: 50,
+  },
+  text: {
+    color: "#fff",
+    fontSize: 32,
+    textAlign: "center",
+    width: 200,
+    marginBottom: 20,
+    
+  },
+  button: {
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    backgroundColor: "#fff",
+    color: "black",
+    borderColor: "#f75e4e",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    marginBottom: 50,
+  },
+  buttonLabel: {
+    color: '#000',
+    fontSize: 16,
+  },
+  textcontainer: {
+   
+  }
 });

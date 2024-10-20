@@ -48,6 +48,7 @@ const HistoryScreen = () => {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.historyhead}>History </Text>
       <FlatList
         data={history}
         renderItem={renderHistoryItem}
@@ -71,9 +72,11 @@ const styles = StyleSheet.create({
   historyItem: {
     backgroundColor: '#2a2a2a',
     padding: 15,
-    marginVertical: 8,
+    marginVertical: 12,
     marginHorizontal: 16,
     borderRadius: 5,
+    borderWidth: 2,
+    borderColor: "#f75e4e"
   },
   timestamp: {
     fontSize: 12,
@@ -96,6 +99,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 50,
   },
+  historyhead: {
+    color: "#fff",
+    fontSize: 32,
+    fontWeight: "800",
+    marginTop: 50,
+    textAlign:"center",
+  }
 });
 
 export default HistoryScreen;

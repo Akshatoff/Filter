@@ -118,6 +118,7 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 32,
     width: 150,
+    fontWeight: "700",
   },
   card: {
     marginTop: 20,

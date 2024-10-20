@@ -210,7 +210,11 @@ export default function HomeScreen() {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.navbar}>
+        <Ionicons name='caret-back-circle-sharp' color={"#f75e4e"} size={32}></Ionicons>
+
           <Text style={styles.navhead}>Filter</Text>
+          <Ionicons name='search-circle-sharp' color={"#f75e4e"} size={32} ></Ionicons>
+
         </View>
         <View style={styles.inputContainer}>
           <TextInput
@@ -326,6 +330,9 @@ const styles = StyleSheet.create({
   },
   navbar: {
     marginTop: 50,
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between"
   }, 
   navhead: {
     textAlign: "center",
@@ -337,5 +344,6 @@ const styles = StyleSheet.create({
     display: "flex",
     alignItems:"center",
     marginTop: 300,
-  }
+  },
+  
 });

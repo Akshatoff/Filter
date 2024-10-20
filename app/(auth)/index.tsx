@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontWeight: "900",
     marginBottom: 20,
-    
+    width: 200,
   },
   button: {
     borderRadius: 10,

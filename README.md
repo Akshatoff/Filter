@@ -1,3 +1,8 @@
+The app is based on Expo and React Native only libraries provided by expo and react-native are used. API's are used for image detection model and text verification and fetching news models.
+
+
+
+
 # Welcome to your Expo app 👋
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).

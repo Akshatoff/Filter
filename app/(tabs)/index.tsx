@@ -6,6 +6,7 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import Ionicons from '@expo/vector-icons/Ionicons'
+import symbolicateStackTrace from "react-native/Libraries/Core/Devtools/symbolicateStackTrace";
 
 interface HistoryItem {
   id: string;
@@ -68,6 +69,7 @@ export default function HomeScreen() {
         contentContainerStyle={styles.scrollViewContent}
         keyboardShouldPersistTaps="handled"
       >
+        
         <View style={styles.dashboardhead}>
             <Text style={styles.dashboardtext}>Welcome, Back</Text>
         <View style={styles.card}>

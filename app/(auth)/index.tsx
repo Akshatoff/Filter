@@ -74,13 +74,13 @@ const styles = StyleSheet.create({
   image: {
     width: "100%",
     height: "100%",
-    marginLeft: 50,
+    marginLeft: 5,
   },
   text: {
     color: "#fff",
     fontSize: 32,
     textAlign: "center",
-    width: 200,
+    fontWeight: "900",
     marginBottom: 20,
     
   },

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback} from 'react';
 import { View, Text, StyleSheet, ScrollView, RefreshControl, FlatList, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
-
+import { Ionicons } from "@expo/vector-icons";
 
 interface HistoryItem {
   id: string;
@@ -60,6 +60,9 @@ const HistoryScreen = () => {
           <Text style={styles.emptyText}>No search history yet</Text>
         }
       />
+      <View style={styles.footer}>
+        <Ionicons name='add-circle-sharp' color={"#f75e4e"} size={64}></Ionicons>
+      </View>
     </View>
   );
 };
@@ -105,6 +108,20 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     marginTop: 50,
     textAlign:"center",
+  },
+  navbar: {
+    marginTop: 50,
+  }, 
+  navhead: {
+    textAlign: "center",
+    fontWeight:"800",
+    color: "#fff",
+    fontSize: 32,
+  },
+  footer: {
+    display: "flex",
+    alignItems:"center",
+    marginTop: 300,
   }
 });
 

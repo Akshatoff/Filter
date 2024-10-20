@@ -4,7 +4,7 @@ import OpenAI from "openai";
 import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import { Ionicons } from "@expo/vector-icons";
 
 interface HistoryItem {
   id: string;
@@ -103,6 +103,9 @@ export default function HomeScreen() {
         contentContainerStyle={styles.scrollViewContent}
         keyboardShouldPersistTaps="handled"
       >
+        <View style={styles.navbar}>
+          <Text style={styles.navhead}>Filter</Text>
+        </View>
        <View style={styles.imageverify}>
           <Pressable style={styles.btn} onPress={pickImage}>
             <Text style={styles.btntext}>Upload Image Here</Text>
@@ -119,7 +122,9 @@ export default function HomeScreen() {
             </View>
           )}
           
-        
+          <View style={styles.footer}>
+        <Ionicons name='add-circle-sharp' color={"#f75e4e"} size={64}></Ionicons>
+      </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -171,5 +176,19 @@ const styles = StyleSheet.create({
   verifytext: {
     fontWeight: "900",
     color: "#fff"
+  },
+  navbar: {
+    marginTop: 50,
+  }, 
+  navhead: {
+    textAlign: "center",
+    fontWeight:"800",
+    color: "#fff",
+    fontSize: 32,
+  },
+  footer: {
+    display: "flex",
+    alignItems:"center",
+    marginTop: 300,
   }
 });
